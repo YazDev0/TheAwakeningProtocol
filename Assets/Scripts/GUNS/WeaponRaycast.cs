@@ -1,0 +1,42 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class WeaponRaycast : MonoBehaviour
+{
+    public float range = 100f;         // „œÏ «·”·«Õ
+    public int damage = 10;            // „ﬁœ«— «·÷——
+    public Transform muzzle;           // „ﬂ«‰ Œ—ÊÃ «·‘⁄«⁄ (⁄«œ… √„«„ «·”·«Õ)
+    public ParticleSystem muzzleFlash; // «Œ Ì«—Ì: ›·«‘ ≈ÿ·«ﬁ
+
+    public void Fire()
+    {
+        // „‘Âœ «·›·«‘
+        if (muzzleFlash) muzzleFlash.Play();
+
+        // ‰»œ√ «·‘⁄«⁄ „‰ «·ﬂ«„Ì—« «·—∆Ì”Ì… (FPS „‰ŸÊ— √Ê·) √Ê „‰ muzzle
+        Transform origin = Camera.main != null ? Camera.main.transform : muzzle;
+
+        if (origin == null)
+        {
+            Debug.LogWarning("·« ÌÊÃœ Camera.main √Ê Muzzle „Œ’’");
+            return;
+        }
+
+        Ray ray = new Ray(origin.position, origin.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, range))
+        {
+            Debug.Log("Hit: " + hit.collider.name);
+
+            // ·Ê ⁄‰œ «·Âœ› ”ﬂ—»  Health
+            // hit.collider.GetComponent<Health>()?.TakeDamage(damage);
+
+            // ·Ê  »€Ï  œ„¯— «·Âœ› „»«‘—… („À«·)
+            // Destroy(hit.collider.gameObject);
+        }
+        else
+        {
+            Debug.Log("Miss");
+        }
+    }
+}
