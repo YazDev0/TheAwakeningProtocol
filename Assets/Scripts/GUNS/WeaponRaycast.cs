@@ -4,39 +4,43 @@ using UnityEngine;
 
 public class WeaponRaycast : MonoBehaviour
 {
-    public float range = 100f;         // „œÏ «·”·«Õ
-    public int damage = 10;            // „ﬁœ«— «·÷——
-    public Transform muzzle;           // „ﬂ«‰ Œ—ÊÃ «·‘⁄«⁄ (⁄«œ… √„«„ «·”·«Õ)
-    public ParticleSystem muzzleFlash; // «Œ Ì«—Ì: ›·«‘ ≈ÿ·«ﬁ
+    public float range = 100f;              // „œÏ «·”·«Õ
+    public int damage = 10;                 // „ﬁœ«— «·÷——
+    public Transform muzzle;                // „ﬂ«‰ Œ—ÊÃ «·ÿ·ﬁ…
+    public LineRenderer line;               // Œÿ ·—”„ «·‘⁄«⁄
+    public float lineDuration = 0.05f;      // ﬂ„ ÌŸ· «·Œÿ Ÿ«Â—
 
     public void Fire()
     {
-        // „‘Âœ «·›·«‘
-        if (muzzleFlash) muzzleFlash.Play();
+        if (muzzle == null) muzzle = transform;
 
-        // ‰»œ√ «·‘⁄«⁄ „‰ «·ﬂ«„Ì—« «·—∆Ì”Ì… (FPS „‰ŸÊ— √Ê·) √Ê „‰ muzzle
-        Transform origin = Camera.main != null ? Camera.main.transform : muzzle;
+        Ray ray = new Ray(muzzle.position, muzzle.forward);
+        Vector3 endPoint = muzzle.position + muzzle.forward * range;
 
-        if (origin == null)
-        {
-            Debug.LogWarning("·« ÌÊÃœ Camera.main √Ê Muzzle „Œ’’");
-            return;
-        }
-
-        Ray ray = new Ray(origin.position, origin.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, range))
         {
+            endPoint = hit.point;
             Debug.Log("Hit: " + hit.collider.name);
 
-            // ·Ê ⁄‰œ «·Âœ› ”ﬂ—»  Health
+            // „À«·: ·Ê ⁄‰œ «·Âœ› ”ﬂ—»  Health
             // hit.collider.GetComponent<Health>()?.TakeDamage(damage);
+        }
 
-            // ·Ê  »€Ï  œ„¯— «·Âœ› „»«‘—… („À«·)
-            // Destroy(hit.collider.gameObject);
-        }
-        else
+        // ⁄—÷ «·Œÿ
+        if (line != null)
         {
-            Debug.Log("Miss");
+            StartCoroutine(ShowLine(endPoint));
         }
+    }
+
+    private System.Collections.IEnumerator ShowLine(Vector3 endPoint)
+    {
+        line.SetPosition(0, muzzle.position);
+        line.SetPosition(1, endPoint);
+        line.enabled = true;
+
+        yield return new WaitForSeconds(lineDuration);
+
+        line.enabled = false;
     }
 }

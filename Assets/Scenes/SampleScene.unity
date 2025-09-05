@@ -1757,6 +1757,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 100
+--- !u!114 &944114294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944114290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fe8e827525fd544e929010107d1f9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 100
+  damage: 10
+  muzzle: {fileID: 0}
+  line: {fileID: 0}
+  lineDuration: 0.05
 --- !u!1 &1011579424 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8402083278056165598, guid: 9c53dc279a4e8d842b6b4b49aea8fbbc,
@@ -3304,6 +3321,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 944114291}
+    - targetCorrespondingSourceObject: {fileID: 647499141696943476, guid: 91ae9411a4d02cf41964a3f538884b64,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 944114294}
   m_SourcePrefab: {fileID: 100100000, guid: 91ae9411a4d02cf41964a3f538884b64, type: 3}
 --- !u!1001 &2089222532
 PrefabInstance:
