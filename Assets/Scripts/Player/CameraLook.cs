@@ -1,30 +1,34 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraLook : MonoBehaviour
 {
     [Header("Settings")]
-    public float sensitivity = 200f;   // ÓÑÚÉ ÇáãÇæÓ
-    public Transform playerBody;       // ÌÓã ÇááÇÚÈ (ÇáßÈÓæáÉ)
-    public Transform playerCamera;     // ÇáßÇãíÑÇ (ÇáÓáÇÍ áÇÒã íßæä Child ÏÇÎáåÇ)
+    public float sensitivity = 200f;
+    public Transform playerBody;    // Ø§Ù„ÙƒØ¨Ø³ÙˆÙ„Ø©
+    public Transform playerCamera;  // Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ (Main Camera)
+
+    [HideInInspector] public bool uiOpen = false; // ØªØªØºÙŠØ± Ù…Ù† Ø³ÙƒØ±Ø¨Øª Ø§Ù„Ù„ØºØ²
 
     private float xRotation = 0f;
 
-    void Start()
-    {
-     //   Cursor.lockState = CursorLockMode.Locked;
-    }
-
     void Update()
     {
+        // Ø¥Ø°Ø§ Ø§Ù„Ù€UI Ù…ÙØªÙˆØ­ â†’ ÙˆÙ‚Ù ÙƒÙ„ Ø´ÙŠØ¡ (Ù„Ø§ ØªØ­Ø±Ùƒ ÙƒØ§Ù…ÙŠØ±Ø§ ÙˆÙ„Ø§ Ù„Ø§Ø¹Ø¨)
+        if (uiOpen) return;
+
+        // ÙˆØ¶Ø¹ Ø§Ù„Ù„Ø¹Ø¨ Ø§Ù„Ø¹Ø§Ø¯ÙŠ
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
 
-        // áİ ÇáÌÓã íãíä/íÓÇÑ
+        // Ù„Ù ÙŠÙ…ÙŠÙ†/ÙŠØ³Ø§Ø± Ù„Ù„Ø¬Ø³Ù… ÙƒØ§Ù…Ù„
         playerBody.Rotate(Vector3.up * mouseX);
 
-        // áİ ÇáßÇãíÑÇ (æãÚåÇ ÇáÓáÇÍ) İæŞ/ÊÍÊ
+        // Ù„Ù ÙÙˆÙ‚/ØªØ­Øª Ù„Ù„ÙƒØ§Ù…ÙŠØ±Ø§ ÙÙ‚Ø·
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f);
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);

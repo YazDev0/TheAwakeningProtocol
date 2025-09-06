@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,139 +8,79 @@ using UnityEngine.UI;
 
 public class PuzzleRGB : MonoBehaviour
 {
-    private bool IsAtDoor = false;
-
-    [SerializeField] private TextMeshProUGUI CodeText;
-    private string codeTextValue = "";
-
-    [Header("Settings")]
-    public string safeCode = "1234";
     public GameObject CodePanel;
     public GameObject laser;
+    public CameraLook camLook; // Ø§Ø³Ø­Ø¨ Ù‡Ù†Ø§ Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ Ø§Ù„Ù„ÙŠ Ø¹Ù„ÙŠÙ‡Ø§ CameraLook
+    public string safeCode = "1234";
 
-    [Header("Latch Glow")]
-    [SerializeField] private float latchBoost = 0.35f;  // ŞæÉ ÇáÊİÊíÍ ÚäÏ ÇáÊËÈíÊ
-
-    // äÎÒøä ÃáæÇä ÇáÃÒÑÇÑ ÇáÃÕáíÉ áäÑÌÚåÇ ÚäÏ ÇáãÓÍ/ÇáäÌÇÍ/ÅÛáÇŞ ÇááæÍÉ
-    private readonly Dictionary<Image, Color> originalColors = new Dictionary<Image, Color>();
-    private readonly HashSet<Image> latchedImages = new HashSet<Image>();
+    private string codeTextValue = "";
+    private bool isAtDoor = false;
 
     void Start()
     {
-        if (CodePanel != null) CodePanel.SetActive(false);
+        CodePanel.SetActive(false);
+        LockCursor();
     }
 
     void Update()
     {
-        if (CodeText != null) CodeText.text = codeTextValue;
-
-        // äÌÇÍ: ÏãøÑ ÇááíÒÑ + ÃÛáŞ ÇááæÍÉ + ÕİøÑ ÇáßæÏ + ÇÑÌÚ ÃáæÇä ÇáÃÒÑÇÑ
         if (codeTextValue == safeCode)
         {
-            if (laser != null) Destroy(laser);
-            if (CodePanel != null) CodePanel.SetActive(false);
+            Destroy(laser);
+            ClosePuzzle();
             codeTextValue = "";
-            ResetLatched();
         }
 
-        // ÊÕİíÑ ÈÚÏ 4 ÎÇäÇÊ (äİÓ ãäØŞß) + ÇÑÌÇÚ ÇáÃáæÇä
-        if (codeTextValue.Length >= 4)
+        if (Input.GetKeyDown(KeyCode.E) && isAtDoor)
         {
-            codeTextValue = "";
-            ResetLatched();
+            OpenPuzzle();
         }
 
-        // İÊÍ ÇááæÍÉ ÚäÏ ÇáÖÛØ Úáì E ÈÇáŞÑÈ ãä ÇáÈÇÈ
-        if (Input.GetKeyDown(KeyCode.E) && IsAtDoor == true)
+        if (Input.GetKeyDown(KeyCode.Escape) && CodePanel.activeSelf)
         {
-            if (CodePanel != null) CodePanel.SetActive(true);
+            ClosePuzzle();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            IsAtDoor = true;
-        }
+        if (other.CompareTag("Player")) isAtDoor = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            IsAtDoor = false;
-            if (CodePanel != null) CodePanel.SetActive(false);
-            ResetLatched(); // ÚäÏ ÅÛáÇŞ ÇááæÍÉ äÑÌøÚ ÇáÃáæÇä
+            isAtDoor = false;
+            ClosePuzzle();
         }
     }
 
-    // ÅÖÇİÉ ÈÏæä ÊÃËíÑ (áæ ÍÈíÊ ÊÓÊÎÏãåÇ)
     public void addDigit(string digit)
     {
         codeTextValue += digit;
     }
 
-    // ÅÖÇİÉ + "íäæÑ æíËÈÊ" ÇáÒÑ ÇáãÖÛæØ ÊáŞÇÆíÇğ (ãÇ íÍÊÇÌ ÊãÑíÑ Image)
-    public void addDigitLatchedSimple(string digit)
+    // === Ù‡Ù†Ø§ ØªØ­Ø· Ø§Ù„Ø¯Ø§Ù„ØªÙŠÙ† ===
+    void OpenPuzzle()
     {
-        codeTextValue += digit;
-
-        // äáÊŞØ ÇáÒÑ ÇáÍÇáí ãä EventSystem æäËÈøÊ ÅÖÇÁÊå
-        var go = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
-        if (go != null)
-        {
-            var img = go.GetComponent<Image>();
-            if (img == null) img = go.GetComponentInChildren<Image>();
-            if (img != null) LatchImage(img);
-        }
-        else
-        {
-            Debug.LogWarning("[PuzzleRGB] áã íÊã ÇáÚËæÑ Úáì currentSelectedGameObject. ÊÃßøÏ ãä æÌæÏ EventSystem İí ÇáãÔåÏ.");
-        }
+        CodePanel.SetActive(true);
+        camLook.uiOpen = true;  // ÙŠÙˆÙ‚Ù Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
-    // íËÈøÊ ÇáÅÖÇÁÉ Úáì ÒÑ æÇÍÏ
-    private void LatchImage(Image img)
+    void ClosePuzzle()
     {
-        if (img == null) return;
-
-        // äÍİÙ Çááæä ÇáÃÕáí ãÑÉ æÇÍÏÉ
-        if (!originalColors.ContainsKey(img))
-            originalColors[img] = img.color;
-
-        // ÅĞÇ ßÇä ãËÈÊ ãÓÈŞÇğ áÇ äÚíÏ ÇáÊİÊíÍ
-        if (latchedImages.Contains(img)) return;
-
-        img.color = BrightenHSV(img.color, latchBoost);
-        latchedImages.Add(img);
+        CodePanel.SetActive(false);
+        camLook.uiOpen = false; // ÙŠØ±Ø¬Ø¹ ÙŠØ´ØºÙ„ Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    // íÑÌøÚ ßá ÇáÃÒÑÇÑ áÃáæÇäåÇ ÇáÃÕáíÉ
-    private void ResetLatched()
+    void LockCursor()
     {
-        foreach (var kv in originalColors)
-        {
-            if (kv.Key) kv.Key.color = kv.Value;
-        }
-        originalColors.Clear();
-        latchedImages.Clear();
-    }
-
-    // ÊİÊíÍ áØíİ ÈÇáÜHSV (ÒíÇÏÉ ÇáÜValue İŞØ)
-    private Color BrightenHSV(Color c, float amount)
-    {
-        Color.RGBToHSV(c, out float h, out float s, out float v);
-        v = Mathf.Clamp01(v + amount);
-        var outC = Color.HSVToRGB(h, s, v);
-        outC.a = c.a;
-        return outC;
-    }
-
-    // (ÇÎÊíÇÑí) ÒÑ "ãÓÍ"
-    public void ClearCode()
-    {
-        codeTextValue = "";
-        ResetLatched();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }
