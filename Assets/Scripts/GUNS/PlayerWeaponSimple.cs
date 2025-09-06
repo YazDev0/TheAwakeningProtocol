@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class PlayerWeaponSimple : MonoBehaviour
 {
-    public Transform hand;          // ⁄Ì¯‰ ⁄Ÿ„…/Empty ›Ì Ìœ «··«⁄»
+    public Transform hand;          // „ﬂ«‰ Õ„· «·”·«Õ (Empty ﬁœ«„ «·ﬂ«„Ì—« √Ê «·ﬂ»”Ê·…)
     public float pickRadius = 2f;   // „”«›… «·«· ﬁ«ÿ
-    private WeaponSimple current;
+    private WeaponRaycast current;
 
     void Update()
     {
-        // «· ﬁÿ √ﬁ—» ”·«Õ »‹ E
+        // «· ﬁ«ÿ √ﬁ—» ”·«Õ »‹ E
         if (Input.GetKeyDown(KeyCode.E) && current == null)
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, pickRadius);
             float best = Mathf.Infinity;
-            WeaponSimple target = null;
+            WeaponRaycast target = null;
 
             foreach (var h in hits)
             {
@@ -25,7 +25,7 @@ public class PlayerWeaponSimple : MonoBehaviour
                     if (d < best)
                     {
                         best = d;
-                        target = h.GetComponent<WeaponSimple>();
+                        target = h.GetComponent<WeaponRaycast>();
                     }
                 }
             }
@@ -39,14 +39,14 @@ public class PlayerWeaponSimple : MonoBehaviour
             current.Fire();
         }
 
-        // —„Ì «·”·«Õ »‹ G («Œ Ì«—Ì)
+        // —„Ì «·”·«Õ »‹ G
         if (Input.GetKeyDown(KeyCode.G) && current != null)
         {
             Drop();
         }
     }
 
-    void Pickup(WeaponSimple w)
+    void Pickup(WeaponRaycast w)
     {
         current = w;
 
@@ -64,11 +64,10 @@ public class PlayerWeaponSimple : MonoBehaviour
 
     void Drop()
     {
-        // ›ıﬂ «·—»ÿ Ê√⁄œ «·›Ì“Ì«¡
         current.transform.SetParent(null);
 
         var rb = current.GetComponent<Rigidbody>();
-        if (rb) { rb.isKinematic = false; rb.useGravity = true; rb.AddForce(transform.forward * 0.5f, ForceMode.Impulse); }
+        if (rb) { rb.isKinematic = false; rb.useGravity = true; rb.AddForce(transform.forward * 2f, ForceMode.Impulse); }
 
         var col = current.GetComponent<Collider>();
         if (col) col.enabled = true;
