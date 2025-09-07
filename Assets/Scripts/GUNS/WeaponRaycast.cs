@@ -35,7 +35,7 @@ public class WeaponRaycast : MonoBehaviour
             Debug.Log("Hit: " + hit.collider.name);
 
             // ãËÇá: áæ ÇáåÏİ ÚäÏå Health
-            // hit.collider.GetComponent<Health>()?.TakeDamage(damage);
+             hit.collider.GetComponent<EnemyStats>()?.TakeDamage(damage);
         }
 
         // äÚÑÖ ÎØ ãä muzzle+offset Åáì ãßÇä ÇáÖÑÈÉ
