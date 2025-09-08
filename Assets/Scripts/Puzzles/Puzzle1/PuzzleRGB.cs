@@ -11,10 +11,14 @@ public class PuzzleRGB : MonoBehaviour
     public GameObject CodePanel;
     public GameObject laser;
     public CameraLook camLook; // اسحب هنا الكاميرا اللي عليها CameraLook
-    public string safeCode = "1234";
+    public string safeCode = "123";
 
     private string codeTextValue = "";
     private bool isAtDoor = false;
+
+    [Header("Audio")]
+    public AudioSource audioSource;  // AudioSource لتشغيل الصوت
+    public AudioClip errorSound;     // الصوت الذي سيتم تشغيله عند الخطأ
 
     void Start()
     {
@@ -24,6 +28,7 @@ public class PuzzleRGB : MonoBehaviour
 
     void Update()
     {
+        // تحقق من الرمز بعد كل إدخال
         if (codeTextValue == safeCode)
         {
             Destroy(laser);
@@ -59,9 +64,29 @@ public class PuzzleRGB : MonoBehaviour
     public void addDigit(string digit)
     {
         codeTextValue += digit;
+        CheckCode(); // التحقق من الرمز بعد كل إدخال
     }
 
-    // === هنا تحط الدالتين ===
+    // === التحقق من الرمز ===
+    void CheckCode()
+    {
+        if (codeTextValue != safeCode && codeTextValue.Length == safeCode.Length)
+        {
+            PlayErrorSound();  // تشغيل الصوت عند الخطأ
+            codeTextValue = "";  // إعادة تعيين الرمز بعد الخطأ
+        }
+    }
+
+    // === تشغيل الصوت عند الرمز الخاطئ ===
+    void PlayErrorSound()
+    {
+        if (audioSource != null && errorSound != null)
+        {
+            audioSource.PlayOneShot(errorSound);  // تشغيل الصوت عند الخطأ
+        }
+    }
+
+    // فتح اللوحة
     void OpenPuzzle()
     {
         CodePanel.SetActive(true);
@@ -70,6 +95,7 @@ public class PuzzleRGB : MonoBehaviour
         Cursor.visible = true;
     }
 
+    // إغلاق اللوحة
     void ClosePuzzle()
     {
         CodePanel.SetActive(false);
