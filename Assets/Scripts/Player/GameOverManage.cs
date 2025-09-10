@@ -15,37 +15,46 @@ public class GameOverManage : MonoBehaviour
 
     private void Start()
     {
+        // نتأكد إن اللعبة ماشية طبيعي في البداية
         Time.timeScale = 1f;
 
+        // نخفي واجهة القيم أوفر
         if (gameOverUI != null)
             gameOverUI.SetActive(false);
-
-   
-
-
     }
 
     public void ShowGameOver(float currentHealth, float maxHealth)
     {
+        // نُظهر واجهة القيم أوفر
         if (gameOverUI != null)
             gameOverUI.SetActive(true);
 
+        // نحدّث النصوص (اختياري)
         if (healthText != null)
             healthText.text = "Health: " + currentHealth.ToString();
 
         if (maxHealthText != null)
             maxHealthText.text = "Max Health: " + maxHealth.ToString();
 
-
-
+        // نوقف الوقت
         Time.timeScale = 0f;
+
+        // نفك الماوس (مؤشر ظاهر وحُرّ الحركة)
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void RestartGame()
     {
- 
-
+        // نرجّع الوقت لوضعه الطبيعي
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        // نقفّل الماوس داخل اللعبة (يفيد خصوصاً ألعاب الـFPS)
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // نعيد تحميل المشهد الحالي
+        Scene current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.buildIndex);
     }
 }
